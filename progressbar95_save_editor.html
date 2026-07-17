@@ -1,0 +1,1141 @@
+<div id="pb95-editor-root"></div>
+<style>
+#pb95-editor-root {
+  --desktop: #1a7a7a;
+  --desktop-dark: #0e5555;
+  --chrome: #c8c8c0;
+  --chrome-light: #f0f0e8;
+  --chrome-dark: #7a7a72;
+  --chrome-darker: #4a4a44;
+  --title-a: #0a1a6e;
+  --title-b: #3d7dd8;
+  --ink: #1a1a16;
+  --ink-soft: #55554e;
+  --bar-green: #2ea043;
+  --bar-green-dark: #1a6e2a;
+  --warn: #b8390e;
+  --link: #0a1a6e;
+  --mono: "Consolas", "SFMono-Regular", Menlo, monospace;
+  --sans: "Tahoma", "Segoe UI", Geneva, Verdana, sans-serif;
+
+  all: initial;
+  * { box-sizing: border-box; }
+  font-family: var(--sans);
+  display: block;
+  background: var(--desktop);
+  background-image:
+    radial-gradient(circle at 20% 20%, rgba(255,255,255,0.06) 0, transparent 40%),
+    repeating-linear-gradient(45deg, rgba(255,255,255,0.02) 0 2px, transparent 2px 4px);
+  padding: 18px;
+  min-height: 100vh;
+  color: var(--ink);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+#pb95-editor-root .window {
+  max-width: 980px;
+  margin: 0 auto;
+  background: var(--chrome);
+  border: 2px solid var(--chrome-light);
+  border-right-color: var(--chrome-darker);
+  border-bottom-color: var(--chrome-darker);
+  box-shadow: 3px 3px 0 rgba(0,0,0,0.35), 0 0 0 1px #000;
+}
+
+#pb95-editor-root .titlebar {
+  background: linear-gradient(90deg, var(--title-a), var(--title-b));
+  color: #fff;
+  padding: 5px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  font-size: 13px;
+}
+#pb95-editor-root .titlebar .ttl { display:flex; align-items:center; gap:8px; }
+#pb95-editor-root .titlebar .ttl:before {
+  content: "";
+  width: 14px; height: 14px;
+  background: repeating-linear-gradient(90deg, #ffd23f 0 3px, #ff8a1f 3px 6px);
+  display: inline-block;
+  border: 1px solid rgba(0,0,0,0.4);
+}
+#pb95-editor-root .titlebar .dots { display:flex; gap:4px; }
+#pb95-editor-root .titlebar .dots span {
+  width: 16px; height: 14px;
+  background: var(--chrome);
+  border: 1px solid var(--chrome-darker);
+  display: inline-block;
+}
+
+#pb95-editor-root .content { padding: 14px; background: var(--chrome); }
+
+#pb95-editor-root .statusbar {
+  border-top: 1px solid var(--chrome-light);
+  padding: 5px 10px;
+  font-size: 11px;
+  color: var(--ink-soft);
+  display:flex; justify-content: space-between;
+}
+
+#pb95-editor-root .panel {
+  background: var(--chrome-light);
+  border: 2px solid var(--chrome-darker);
+  border-right-color: var(--chrome-light);
+  border-bottom-color: var(--chrome-light);
+  padding: 10px;
+  margin-bottom: 12px;
+}
+#pb95-editor-root .inset {
+  border: 2px solid var(--chrome-darker);
+  border-right-color: var(--chrome-light);
+  border-bottom-color: var(--chrome-light);
+  background: #fff;
+}
+
+#pb95-editor-root h2 {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--title-a);
+  margin: 0 0 8px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--chrome-dark);
+  font-weight: 700;
+}
+
+#pb95-editor-root .drop {
+  border: 2px dashed var(--chrome-darker);
+  background: #fff;
+  padding: 22px;
+  text-align: center;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+#pb95-editor-root .drop:hover, #pb95-editor-root .drop.drag { background: #eefaf0; border-color: var(--bar-green); }
+#pb95-editor-root .drop .big { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+#pb95-editor-root .drop .small { font-size: 11px; color: var(--ink-soft); }
+#pb95-editor-root input[type=file] { display: none; }
+
+#pb95-editor-root button {
+  font-family: var(--sans);
+  background: var(--chrome);
+  border: 2px solid var(--chrome-light);
+  border-right-color: var(--chrome-darker);
+  border-bottom-color: var(--chrome-darker);
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  color: var(--ink);
+}
+#pb95-editor-root button:active {
+  border-color: var(--chrome-darker);
+  border-right-color: var(--chrome-light);
+  border-bottom-color: var(--chrome-light);
+}
+#pb95-editor-root button.primary {
+  background: var(--bar-green);
+  color: #fff;
+  border-color: #6fd98a #14401e #14401e #6fd98a;
+}
+#pb95-editor-root button:disabled { opacity: 0.45; cursor: not-allowed; }
+#pb95-editor-root button.small { padding: 3px 8px; font-size: 11px; font-weight: 400; }
+
+#pb95-editor-root .tabs { display:flex; gap:2px; margin-bottom: 10px; flex-wrap: wrap; }
+#pb95-editor-root .tab {
+  padding: 6px 12px;
+  background: var(--chrome);
+  border: 2px solid var(--chrome-light);
+  border-right-color: var(--chrome-darker);
+  border-bottom: none;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  color: var(--ink-soft);
+}
+#pb95-editor-root .tab.active { background: var(--chrome-light); color: var(--title-a); }
+#pb95-editor-root .tabpage { display: none; }
+#pb95-editor-root .tabpage.active { display: block; }
+
+#pb95-editor-root .category { margin-bottom: 14px; }
+#pb95-editor-root .category-head {
+  display:flex; align-items:center; justify-content: space-between;
+  background: var(--chrome);
+  padding: 4px 8px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--title-a);
+  border-bottom: 1px solid var(--chrome-dark);
+}
+#pb95-editor-root .sys-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 1px;
+  background: var(--chrome-dark);
+}
+#pb95-editor-root .sys-row {
+  background: #fff;
+  padding: 6px 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+#pb95-editor-root .sys-row.on { background: #eafbee; }
+#pb95-editor-root .sys-row label {
+  flex: 1;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  cursor: pointer;
+  user-select: none;
+}
+#pb95-editor-root .sys-row input[type=checkbox] { width: 15px; height: 15px; cursor: pointer; flex-shrink:0; }
+#pb95-editor-root .sys-row input[type=number] {
+  width: 52px;
+  font-family: var(--mono);
+  font-size: 11px;
+  border: 1px solid var(--chrome-dark);
+  padding: 2px 4px;
+}
+#pb95-editor-root .sys-row input[type=number]:disabled { background: #eee; color: #999; }
+
+#pb95-editor-root .badge-row { display:flex; gap: 14px; flex-wrap: wrap; align-items: flex-end; margin-bottom: 12px; }
+#pb95-editor-root .field { display:flex; flex-direction: column; gap: 3px; }
+#pb95-editor-root .field label { font-size: 11px; font-weight: 700; color: var(--ink-soft); }
+#pb95-editor-root .field input, #pb95-editor-root .field select {
+  font-family: var(--mono);
+  font-size: 12px;
+  padding: 4px 6px;
+  border: 1px solid var(--chrome-dark);
+}
+#pb95-editor-root .badge-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(180deg,#fff8e0,#ffe9a8);
+  border: 1px solid #c9a227;
+  padding: 4px 10px;
+  font-weight: 700;
+  font-size: 12px;
+  color: #6b4e00;
+}
+#pb95-editor-root .badge-list { display:flex; flex-wrap:wrap; gap: 4px; margin-top: 8px; }
+#pb95-editor-root .badge-pip {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  padding: 2px 6px;
+  border: 1px solid var(--chrome-dark);
+  background: #fff;
+  color: var(--ink-soft);
+}
+#pb95-editor-root .badge-pip.reached { background: var(--bar-green); color: #fff; border-color: var(--bar-green-dark); }
+#pb95-editor-root .badge-pip.current { outline: 2px solid var(--title-a); outline-offset: 1px; }
+
+#pb95-editor-root .skin-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 6px;
+}
+#pb95-editor-root .skin-chip {
+  display:flex; align-items:center; gap:6px;
+  background: #fff; border: 1px solid var(--chrome-dark);
+  padding: 5px 7px; font-family: var(--mono); font-size: 11px; cursor:pointer;
+}
+#pb95-editor-root .skin-chip.on { background: #eafbee; border-color: var(--bar-green); }
+
+#pb95-editor-root .toolbar { display:flex; gap:8px; justify-content: space-between; align-items:center; flex-wrap:wrap; margin-bottom: 12px; }
+#pb95-editor-root .toolbar .left { display:flex; gap:8px; flex-wrap: wrap; }
+#pb95-editor-root .err { color: var(--warn); font-weight: 700; font-size: 12px; margin-top: 8px; }
+#pb95-editor-root .ok { color: var(--bar-green-dark); font-weight: 700; font-size: 12px; margin-top: 8px; }
+#pb95-editor-root .hint { color: var(--ink-soft); font-size: 11px; margin-top: 6px; }
+#pb95-editor-root a { color: var(--link); }
+
+#pb95-editor-root .progressbar-track {
+  height: 16px;
+  background: #fff;
+  border: 2px solid var(--chrome-darker);
+  border-right-color: var(--chrome-light);
+  border-bottom-color: var(--chrome-light);
+  overflow: hidden;
+  margin-top: 4px;
+}
+#pb95-editor-root .progressbar-fill {
+  height: 100%;
+  background: repeating-linear-gradient(90deg, var(--bar-green) 0 8px, var(--bar-green-dark) 8px 9px);
+  transition: width 0.25s;
+}
+</style>
+
+<script>
+(function(){
+  const ROOT = document.getElementById('pb95-editor-root');
+
+  // ---- Real algorithm & key, reverse-engineered from Progressbar95's own Lua bytecode ----
+  const KEY = "891001agij-178thta-hj-yqqiqq0-uqiqy12-s-jhgjgkf23-ush-1223-vaba";
+
+  function decrypt(str, key){
+    let out = "";
+    for (let i = 0; i < str.length; i++){
+      const kc = key.charCodeAt(i % key.length);
+      out += String.fromCharCode((str.charCodeAt(i) - kc + 256) % 256);
+    }
+    return out;
+  }
+  function encrypt(str, key){
+    let out = "";
+    for (let i = 0; i < str.length; i++){
+      const kc = key.charCodeAt(i % key.length);
+      out += String.fromCharCode((str.charCodeAt(i) + kc) % 256);
+    }
+    return out;
+  }
+
+  // ---- System catalog, reverse-engineered from the game's decompiled Lua ----
+  const CATEGORIES = [
+    {
+      key: 'main', title: 'Progressbar Line', installList: true,
+      ids: ['P95','P96','P98','PME','P2K','PXP','PWS','P_7','P81','P10','P1X','P11','P12','P13','P14']
+    },
+    {
+      key: 'bar', title: 'BarOS', duty: 'BAR',
+      ids: ['BA1','BA2','BA3','BA4','BA5','BA6','BA7','BA8','BA9','B10','B11','B12','B13','B14','B15','B16','B17','BX1','BOS']
+    },
+    {
+      key: 'compact', title: 'CompactPC (incl. alt "B" devices)', duty: 'CompactPC',
+      ids: ['C_1','C_2','C_3','C_4','C_5','C_1B','C_2B','C_3B','C_4B','C_5B']
+    },
+    {
+      key: 'bit8', title: 'BIT8', duty: 'BIT8',
+      ids: ['E_1','E_2','E_3','E_4','E_5','E_0']
+    },
+    {
+      key: 'server', title: 'Progressbar Server', stageOnly: true,
+      ids: ['PS1','PS2','PS3','PS4','PS5','PS6','PS7','PS8','PS9','PSA','PSB']
+    }
+  ];
+
+  const SPECIAL_SKINS = ['P31','P_2','P_1','PDS','PLH','PWP','PCH','PNT','P36','PNP','BX1','BOS'];
+  const SKIN_NAMES = {
+    P_1:'Progressbar 1', P_2:'Progressbar 2', P31:'Progressbar 3.14', P36:'Progressbar NOT 3.60',
+    PDS:'ProgressDOS 5.0 (PB-DOS Shell)',
+    PCH:'Beta skin (PCH)', PNT:'Beta skin (PNT)', PNP:'Beta skin (PNP)', PWP:'Beta skin (PWP)', PLH:'Beta skin (PLH)',
+    BX1:'BAR/X', BOS:'B OS'
+  };
+
+  // Real names pulled from the game's own decompiled Lua tables (Name field per system)
+  const NAMES = {
+    P95:'Progressbar 95', P96:'Progressbar 95 plus', P98:'Progressbar 98', PME:'Progressbar Meme',
+    P2K:'Progressbar 2000', PXP:'Progressbar XB', PWS:'Progressbar Wista', P_7:'Progressbar 7',
+    P81:'Progressbar 81', P10:'Progressbar 10', P1X:'Progressbar 1X', P11:'Progressbar 11',
+    P12:'Progressbar 11.22', P13:'Progressbar 12', P14:'Progressbar 14',
+    BA1:'Bar System 1', BA2:'Bar System 2', BA3:'Bar System 3', BA4:'Bar System 4', BA5:'Bar System 5',
+    BA6:'Bar System 6', BA7:'Bar System 7', BA8:'Bar System 8', BA9:'BarOS 9',
+    B10:'BarOS 10', B11:'BarOS 10.II', B12:'BarOS 10.III', B13:'BarOS 11', B14:'BarOS 12',
+    B15:'BarOS 13', B16:'BarOS 14', B17:'BarOS 15', BX1:'BAR/X', BOS:'B OS', BPB:'BarOS 10 (H@ckgresh)',
+    C_1:'Progressbar PE', C_2:'Progressbar PE 2.0', C_3:'Progressbar.PET 3.0',
+    C_4:'Progressbar PE Compact 7.0', C_5:'Progressbar PE Compact 10',
+    C_1B:'Progressbar PE (Bec Gears alt)', C_2B:'Progressbar PE 2.0 (alt)', C_3B:'Progressbar.PET 3.0 (alt)',
+    C_4B:'Progressbar PE Compact 7.0 (alt)', C_5B:'Progressbar PE Compact 10 (alt)',
+    E_1:'TPB-80', E_2:'PABARI 950', E_3:'BX SPECTRE', E_4:'POMODORO 84', E_5:'PYRUS+', E_0:'PYRUS-',
+    PS1:'Progressbar NOT 4.0 Server', PS2:'Progressbar 2000 Server', PS3:'Progressbar Server 2002',
+    PS4:'Progressbar Server 2005', PS5:'Progressbar Server 2007', PS6:'Progressbar Server 2081',
+    PS7:'Progressbar Server 2011', PS8:'Progressbar Server 201X', PS9:'Progressbar Server 2021',
+    PSA:'Progressbar Server 2023', PSB:'Progressbar Server 12'
+  };
+  function displayName(id){ return NAMES[id] || id; }
+
+  const BADGES = ['NIL','USER','PRO','GEEK','HCKR','XPRT','MSTR','ADPT','GRND','COOL','NERD','SPOD','BRAIN','GENIUS','HAVELIFE'];
+  // Thresholds are this editor's own scale (a "total level" you set below) - the game
+  // itself doesn't expose documented thresholds, so these are sensible round numbers.
+  const BADGE_THRESHOLDS = [0,10,25,50,75,100,150,200,300,400,500,650,800,1000,1500];
+
+  let state = null; // decrypted save object
+  let sysState = {}; // id -> {installed, level}
+  let activeTab = 'systems';
+
+  function el(tag, attrs, ...kids){
+    const e = document.createElement(tag);
+    if (attrs) for (const k in attrs){
+      if (k === 'class') e.className = attrs[k];
+      else if (k === 'html') e.innerHTML = attrs[k];
+      else if (k.startsWith('on')) e.addEventListener(k.slice(2), attrs[k]);
+      else if (typeof attrs[k] === 'boolean'){
+        if (attrs[k]) e.setAttribute(k, '');
+        // false -> omit entirely so boolean HTML attrs (disabled/selected/checked) don't get stuck "on"
+      }
+      else e.setAttribute(k, attrs[k]);
+    }
+    kids.flat().forEach(k => { if (k!=null) e.append(k.nodeType ? k : document.createTextNode(k)); });
+    return e;
+  }
+
+  function render(){
+    ROOT.innerHTML = '';
+    const win = el('div', {class:'window'});
+    win.append(
+      el('div', {class:'titlebar'},
+        el('div', {class:'ttl'}, 'PB95SAVE.EXE — Progressbar95 Save Editor'),
+        el('div', {class:'dots'}, el('span',{},'_'), el('span',{},'▢'), el('span',{},'✕'))
+      )
+    );
+    const content = el('div', {class:'content'});
+    win.append(content);
+
+    if (!state) content.append(renderUpload());
+    else content.append(renderEditor());
+
+    win.append(el('div', {class:'statusbar'},
+      el('span',{}, state ? 'Save loaded — editing in memory only' : 'Ready'),
+      el('span',{}, 'Cipher: additive repeating-key · verified against game bytecode')
+    ));
+
+    ROOT.append(win);
+  }
+
+  function renderUpload(){
+    const wrap = el('div', {});
+    wrap.append(el('h2',{},'Load a savedata.txt'));
+    const drop = el('div', {class:'drop'},
+      el('div', {class:'big'}, '📁 Drop savedata.txt here, or click to browse'),
+      el('div', {class:'small'}, 'Found in %appdata%\\Spooky House Studios UG (haftungsbeschraenkt)\\Progressbar95\\Documents\\'),
+    );
+    const input = el('input', {type:'file', accept:'.txt', onchange: (e)=> handleFile(e.target.files[0])});
+    drop.append(input);
+    drop.addEventListener('click', ()=> input.click());
+    ['dragover','dragenter'].forEach(ev => drop.addEventListener(ev, e=>{e.preventDefault(); drop.classList.add('drag');}));
+    ['dragleave','drop'].forEach(ev => drop.addEventListener(ev, e=>{e.preventDefault(); drop.classList.remove('drag');}));
+    drop.addEventListener('drop', e=>{
+      const f = e.dataTransfer.files[0];
+      if (f) handleFile(f);
+    });
+    wrap.append(drop);
+    wrap.append(el('div', {id:'upload-msg'}));
+    return wrap;
+  }
+
+  function handleFile(file){
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const raw = reader.result;
+        const dec = decrypt(raw, KEY);
+        const obj = JSON.parse(dec);
+        loadSave(obj);
+      } catch(err){
+        const msg = document.getElementById('upload-msg');
+        if (msg) msg.innerHTML = '';
+        const m = el('div', {class:'err'}, '✕ Could not decrypt/parse this file. Make sure it\'s an unmodified savedata.txt. (' + err.message + ')');
+        document.getElementById('upload-msg')?.append(m);
+      }
+    };
+    reader.readAsText(file, 'utf-8');
+  }
+
+  function safeParse(str, fallback){
+    try { return JSON.parse(str); } catch(e){ return fallback; }
+  }
+
+  function loadSave(obj){
+    state = obj;
+    state._gs = safeParse(state.GameStagesSaves, {});
+    state._bs = safeParse(state.BestStagesSaves, {});
+    state._ws = safeParse(state.WallpaperSaves, {});
+    state._gws = safeParse(state.GameWallpaperSaves, {});
+    state._duty = safeParse(state.DutyServices, {});
+    state._specialSkins = safeParse(state.GameSpecialSkins, []);
+    state._skinsPurchased = safeParse(state.SpecialSkinsPurchased, []);
+    if (!state._duty.OS) state._duty.OS = {};
+    ['BAR','CompactPC','BIT8'].forEach(k=>{
+      if (!state._duty.OS[k]) state._duty.OS[k] = {InstalledSystem:[], PurchasedSystem:[], UpgradeStage:0};
+      if (!state._duty.OS[k].InstalledSystem) state._duty.OS[k].InstalledSystem = [];
+    });
+    if (!state._duty.Badges) state._duty.Badges = {List: BADGES, Name:'NIL', Level:1};
+
+    const installedMain = new Set((state.OS_Installed_List||'').trim().split(/\s+/).filter(Boolean));
+    const installedBar = new Set(state._duty.OS.BAR.InstalledSystem);
+    const installedCompact = new Set(state._duty.OS.CompactPC.InstalledSystem);
+    const installedBit8 = new Set(state._duty.OS.BIT8.InstalledSystem);
+
+    sysState = {};
+    CATEGORIES.forEach(cat=>{
+      cat.ids.forEach(id=>{
+        let installed;
+        if (cat.installList) installed = installedMain.has(id);
+        else if (cat.key==='bar') installed = installedBar.has(id);
+        else if (cat.key==='compact') installed = installedCompact.has(id);
+        else if (cat.key==='bit8') installed = installedBit8.has(id);
+        else installed = (id in state._gs) || (id in state._bs); // server line: stage-tracked only
+        sysState[id] = {
+          installed,
+          level: state._gs[id] ?? 0,
+          best: state._bs[id] ?? 0
+        };
+      });
+    });
+
+    state._badgeLevel = state._badgeTotal || 0;
+    render();
+  }
+
+  function renderEditor(){
+    const frag = el('div', {});
+
+    const tabs = el('div', {class:'tabs'});
+    const pages = el('div', {});
+    const tabDefs = [
+      {id:'systems', label:'🖥 Systems & Levels'},
+      {id:'progress', label:'📈 Progress Data'},
+      {id:'wallpapers', label:'🖼 Wallpapers'},
+      {id:'badges', label:'🏅 Badges'},
+      {id:'skins', label:'🎨 Special Skins'},
+      {id:'raw', label:'🔧 Raw JSON'},
+      {id:'export', label:'💾 Export'}
+    ];
+    let active = activeTab;
+
+    function switchTab(id){
+      active = id;
+      activeTab = id;
+      tabs.querySelectorAll('.tab').forEach(t=> t.classList.toggle('active', t.dataset.id===id));
+      pages.querySelectorAll('.tabpage').forEach(p=> p.classList.toggle('active', p.dataset.id===id));
+    }
+
+    tabDefs.forEach(t=>{
+      const tab = el('div', {class:'tab'+(t.id===active?' active':''), 'data-id':t.id, onclick:()=>switchTab(t.id)}, t.label);
+      tabs.append(tab);
+    });
+
+    pages.append(page('systems', renderSystemsPage()));
+    pages.append(page('progress', renderProgressPage()));
+    pages.append(page('wallpapers', renderWallpapersPage()));
+    pages.append(page('badges', renderBadgesPage()));
+    pages.append(page('achievements', renderAchievementsPage()));
+    pages.append(page('skins', renderSkinsPage()));
+    pages.append(page('raw', renderRawPage()));
+    pages.append(page('export', renderExportPage()));
+
+    function page(id, contentEl){
+      const p = el('div', {class:'tabpage'+(id===active?' active':''), 'data-id':id});
+      p.append(contentEl);
+      return p;
+    }
+
+    frag.append(
+      el('div', {class:'toolbar'},
+        el('div', {class:'left'},
+          el('button', {class:'small', onclick: unlockEverything}, '⚡ Unlock everything'),
+          el('button', {class:'small', onclick: ()=>{state=null; render();}}, '↺ Load a different file')
+        ),
+        el('div', {}, el('span',{class:'hint'}, 'Changes apply live to the in-memory save. Nothing is written to disk until you export.'))
+      )
+    );
+    frag.append(tabs, pages);
+    return frag;
+  }
+
+  function unlockEverything(){
+    CATEGORIES.forEach(cat=> cat.ids.forEach(id=>{
+      sysState[id].installed = true;
+      if (sysState[id].level < 101) sysState[id].level = 101;
+      if (sysState[id].best < 1000) sysState[id].best = 1000;
+      state._ws[id] = Math.max(state._ws[id]||0, 10);
+      state._gws[id] = Math.max(state._gws[id]||0, 1000);
+    }));
+    state._specialSkins = [...SPECIAL_SKINS];
+    state._skinsPurchased = [...SPECIAL_SKINS];
+    state._badgeTotal = BADGE_THRESHOLDS[BADGE_THRESHOLDS.length-1];
+    const codes = ACHIEVEMENTS.map(a=>a[0]);
+    state._duty.PlayerAchievementList = [...codes];
+    state._duty.PlayerAchievementListOld = [...codes];
+    render();
+  }
+
+  function renderSystemsPage(){
+    const wrap = el('div', {});
+    CATEGORIES.forEach(cat=>{
+      const panel = el('div', {class:'category'});
+      const installedCount = cat.ids.filter(id=>sysState[id].installed).length;
+      panel.append(el('div', {class:'category-head'},
+        el('span',{}, cat.title),
+        el('span',{}, installedCount + ' / ' + cat.ids.length + ' installed')
+      ));
+      const grid = el('div', {class:'sys-grid'});
+      cat.ids.forEach(id=>{
+        const s = sysState[id];
+        const row = el('div', {class:'sys-row'+(s.installed?' on':'')});
+        const cb = el('input', {type:'checkbox', onchange:(e)=>{
+          s.installed = e.target.checked;
+          if (s.installed && s.level===0){ s.level = 1; s.best = Math.max(s.best,1); }
+          renderInPlace();
+        }});
+        cb.checked = s.installed;
+        const lvl = el('input', {type:'number', min:'0', max:'1000', value:s.level, disabled: !s.installed, oninput:(e)=>{
+          s.level = parseInt(e.target.value||'0',10);
+          if (s.best < s.level) s.best = s.level;
+        }});
+        row.append(cb, el('label',{onclick:()=>{cb.checked=!cb.checked; cb.dispatchEvent(new Event('change'));}}, el('div',{style:'font-weight:700; font-size:11.5px;'}, displayName(id)), el('div',{style:'font-size:9.5px; color:var(--ink-soft); font-family:var(--mono);'}, id)), lvl);
+        grid.append(row);
+      });
+      panel.append(grid);
+      wrap.append(panel);
+    });
+    wrap.append(el('div',{class:'hint'},
+      'Checking a box marks the system as installed (this writes to the real install-tracking arrays the game checks, not just the cosmetic progress counters). ',
+      'The number is the level/stage count saved for that system.'
+    ));
+    return wrap;
+  }
+
+  function currentBadgeIndex(total){
+    let idx = 0;
+    for (let i=0;i<BADGE_THRESHOLDS.length;i++){
+      if (total >= BADGE_THRESHOLDS[i]) idx = i;
+    }
+    return idx;
+  }
+
+  function renderBadgesPage(){
+    const wrap = el('div', {class:'panel'});
+    wrap.append(el('h2',{}, 'Badge rank'));
+    const total = state._badgeTotal || 0;
+    const idx = currentBadgeIndex(total);
+
+    const row = el('div', {class:'badge-row'});
+    const totalField = el('div', {class:'field'},
+      el('label',{}, 'Total level (drives automatic rank)'),
+      el('input', {type:'number', min:'0', value: total, oninput:(e)=>{
+        state._badgeTotal = parseInt(e.target.value||'0',10);
+        renderInPlace();
+      }})
+    );
+    const overrideField = el('div', {class:'field'},
+      el('label',{}, 'Manual override'),
+      (()=>{
+        const sel = el('select', {onchange:(e)=>{
+          state._badgeOverride = e.target.value === '' ? null : parseInt(e.target.value,10);
+          renderInPlace();
+        }});
+        sel.append(el('option', {value:''}, '— auto from total level —'));
+        BADGES.forEach((b,i)=> sel.append(el('option', {value:i, selected: state._badgeOverride===i}, b)));
+        return sel;
+      })()
+    );
+    row.append(totalField, overrideField);
+    wrap.append(row);
+
+    const effectiveIdx = (state._badgeOverride!=null) ? state._badgeOverride : idx;
+    wrap.append(el('div', {class:'badge-chip'}, '🏅 Current rank: ' + BADGES[effectiveIdx] + ' (tier ' + (effectiveIdx+1) + ' / ' + BADGES.length + ')'));
+
+    const pips = el('div', {class:'badge-list'});
+    BADGES.forEach((b,i)=>{
+      pips.append(el('span', {class:'badge-pip'+(i<=effectiveIdx?' reached':'')+(i===effectiveIdx?' current':'')},
+        b + ' ≥' + BADGE_THRESHOLDS[i]));
+    });
+    wrap.append(pips);
+    wrap.append(el('div',{class:'hint'},
+      'The game doesn\'t expose documented rank thresholds, so this editor uses its own round-number scale to decide when you cross into PRO, XPRT, GRND, etc. ',
+      'Set "total level" high enough (or use the manual dropdown) and Badges.Name / Badges.Level get written directly on export.'
+    ));
+    return wrap;
+  }
+
+  // Internal achievement codes confirmed from the game's own save data (PlayerAchievementList /
+  // PlayerAchievementListOld), paired with real names/descriptions where known from the wiki & Steam guide.
+  const ACHIEVEMENTS = [
+    ['perfectionist','Perfectionist','Collect a 100% perfect progress bar'],
+    ['nonconformist','Nonconformist','Disagree to the EULA at startup'],
+    ['95','Progressbar 95','Install Progressbar 95'],
+    ['ball','Catch a ball',''],
+    ['yinandyangt','Yin & Yang','Overlap a blue and pink segment perfectly'],
+    ['zebra','Zebra',''],
+    ['outerspace','Outer Space',''],
+    ['getupgrade','First Upgrade','Buy your first hardware upgrade'],
+    ['matrix','Matrix',''],
+    ['dosdigger','DOS Digger','Dig through ProgressDOS'],
+    ['hex','Hex',''],
+    ['sys32','System32','Delete System32'],
+    ['bug','Catch a Bug',''],
+    ['dosbonus','DOS Bonus',''],
+    ['dos10k','DOS 10K',''],
+    ['easteregg','Easter Egg','Find a hidden easter egg'],
+    ['p96','Progressbar 95 plus','Install Progressbar 95 plus'],
+    ['dog','Catch a Dog',''],
+    ['symmetry','Symmetry',''],
+    ['scandisk','ScanDisk',''],
+    ['defender','Progress Defender','Play Progress Defender'],
+    ['minesweeper','Minesweeper','Play Minesweeper'],
+    ['saver','Screensaver',''],
+    ['p98','Progressbar 98','Install Progressbar 98'],
+    ['syscode','System Code',''],
+    ['pro','Pro Badge','Reach the Pro badge'],
+    ['prog3d','Progresstein 3D','Play Progresstein 3D'],
+    ['pme','Progressbar Meme','Install Progressbar Meme'],
+    ['klondike','Klondike','Play Klondike solitaire'],
+    ['latin','Latin',''],
+    ['p2k','Progressbar 2000','Install Progressbar 2000'],
+    ['dos50k','DOS 50K',''],
+    ['removebin','Empty the Recycle Bin',''],
+    ['p31','Progressbar 3.14 skin','Unlock the 3.14 skin'],
+    ['pxp','Progressbar XB','Install Progressbar XB'],
+    ['deadpixel','Dead Pixel',''],
+    ['tube','Tube',''],
+    ['magenta','Magenta',''],
+    ['fairplay','Fair Play',''],
+    ['ctrlaltdel','Ctrl+Alt+Del',''],
+    ['pws','Progressbar Wista','Install Progressbar Wista'],
+    ['slidepuzzle','Slide Puzzle','Solve the slide puzzle'],
+    ['anti95','Anti-95',''],
+    ['antitube','Anti-Tube',''],
+    ['morse95','Morse Code','Decode a Morse code message'],
+    ['p_7','Progressbar 7','Install Progressbar 7'],
+    ['daychallenges','Daily Challenges','Complete a daily challenge'],
+    ['null','Null',''],
+    ['p81','Progressbar 81','Install Progressbar 81'],
+    ['p10','Progressbar 10','Install Progressbar 10'],
+    ['expert','Expert Badge','Reach the Expert badge'],
+    ['pnt','PNT skin','Unlock the PNT special skin'],
+    ['customgame','Custom Game','Play a custom game mode'],
+    ['ba1','Bar System 1','Install Bar System 1'],
+    ['ba2','Bar System 2','Install Bar System 2'],
+    ['ba3','Bar System 3','Install Bar System 3'],
+    ['ba4','Bar System 4','Install Bar System 4'],
+    ['colreg','Full Deck','Collect all regular Progressbar skins'],
+    ['p1x','Progressbar 1X','Install Progressbar 1X'],
+    ['p11','Progressbar 11','Install Progressbar 11'],
+    ['p12','Progressbar 11.22','Install Progressbar 11.22'],
+    ['master','Master Badge','Reach the Master badge'],
+    ['adept','Adept Badge','Reach the Adept badge'],
+    ['p_2','P_2 skin','Unlock the P_2 special skin'],
+    ['p36','P36 skin','Unlock the P36 special skin'],
+    ['grand','Grand Badge','Reach the Grand badge'],
+    ['server','Server Line','Install a Progressbar Server system'],
+    ['p_1','P_1 skin','Unlock the P_1 special skin'],
+    ['colclassic','Collector of Classics','Unlock all classic Progressbar skins'],
+    ['pds','PDS skin','Unlock the PDS special skin'],
+    ['colbeta','Beta Collector','Collect all beta skins'],
+    ['pch','PCH skin','Unlock the PCH special skin'],
+    ['pnp','PNP skin','Unlock the PNP special skin'],
+    ['pwp','PWP skin','Unlock the PWP special skin'],
+    ['plh','PLH skin','Unlock the PLH special skin'],
+    ['ba5','Bar System 5','Install Bar System 5'],
+    ['ba6','Bar System 6','Install Bar System 6'],
+    ['ba7','Bar System 7','Install Bar System 7'],
+    ['ba8','Bar System 8','Install Bar System 8'],
+    ['ba9','BarOS 9','Install BarOS 9'],
+    ['b10','BarOS 10','Install BarOS 10'],
+    ['b11','BarOS 10.II','Install BarOS 10.II'],
+    ['b12','BarOS 10.III','Install BarOS 10.III'],
+    ['b13','BarOS 11','Install BarOS 11'],
+    ['b14','BarOS 12','Install BarOS 12'],
+    ['b15','BarOS 13','Install BarOS 13'],
+    ['b16','BarOS 14','Install BarOS 14'],
+    ['anotherdeck','Another Deck',''],
+    ['bos','B OS','Install B OS'],
+    ['rainbow','ROYGBIV','Collect every progress bar color'],
+    ['dontclosepopuphardcore','Don\u2019t Close (Hardcore)','Survive a popup on Hardcore mode'],
+    ['serverline','Full Server Line','Install every Progressbar Server system'],
+    ['dontpanic','Don\u2019t Panic',''],
+    ['rmrf','rm -rf','Trigger the RMRF easter egg'],
+    ['y2k','Y2K',''],
+    ['ieye','Digital Eye',''],
+    ['bit8','8-Bit Systems','Install an 8-bit system'],
+    ['p13','Progressbar 12','Install Progressbar 12'],
+    ['pe','Progressbar PE','Install a CompactPC system']
+  ];
+
+  function renderAchievementsPage(){
+    const wrap = el('div', {class:'panel'});
+    const list = state._duty.PlayerAchievementList || (state._duty.PlayerAchievementList = []);
+    const listOld = state._duty.PlayerAchievementListOld || (state._duty.PlayerAchievementListOld = []);
+    wrap.append(el('h2',{}, '🏆 Achievements (' + list.length + ' / ' + ACHIEVEMENTS.length + ')'));
+    wrap.append(el('div', {class:'toolbar', style:'margin-bottom:8px;'},
+      el('div', {class:'left'},
+        el('button', {class:'small', onclick:()=>{
+          ACHIEVEMENTS.forEach(([code])=>{ if (!list.includes(code)) list.push(code); if (!listOld.includes(code)) listOld.push(code); });
+          renderInPlace();
+        }}, '✓ Unlock all'),
+        el('button', {class:'small', onclick:()=>{
+          state._duty.PlayerAchievementList = [];
+          state._duty.PlayerAchievementListOld = [];
+          renderInPlace();
+        }}, '✕ Clear all')
+      )
+    ));
+    const grid = el('div', {class:'sys-grid'});
+    ACHIEVEMENTS.forEach(([code, name, desc])=>{
+      const on = list.includes(code);
+      const row = el('div', {class:'sys-row'+(on?' on':'')});
+      const cb = el('input', {type:'checkbox', onchange:(e)=>{
+        const idx = list.indexOf(code); const idxOld = listOld.indexOf(code);
+        if (e.target.checked){
+          if (idx<0) list.push(code);
+          if (idxOld<0) listOld.push(code);
+        } else {
+          if (idx>=0) list.splice(idx,1);
+          if (idxOld>=0) listOld.splice(idxOld,1);
+        }
+        renderInPlace();
+      }});
+      cb.checked = on;
+      row.append(cb, el('label',{onclick:()=>{cb.checked=!cb.checked; cb.dispatchEvent(new Event('change'));}, title: desc||code},
+        el('div',{style:'font-weight:700; font-size:11.5px;'}, name),
+        el('div',{style:'font-size:9.5px; color:var(--ink-soft); font-family:var(--mono);'}, code)
+      ));
+      grid.append(row);
+    });
+    wrap.append(grid);
+    return wrap;
+  }
+
+  function renderSkinsPage(){
+    const wrap = el('div', {class:'panel'});
+    wrap.append(el('h2',{}, 'Special / premium skins'));
+    const grid = el('div', {class:'skin-grid'});
+    SPECIAL_SKINS.forEach(id=>{
+      const on = state._specialSkins.includes(id) && state._skinsPurchased.includes(id);
+      const chip = el('div', {class:'skin-chip'+(on?' on':''), onclick:()=>{
+        const has = state._specialSkins.includes(id);
+        if (has){
+          state._specialSkins = state._specialSkins.filter(x=>x!==id);
+          state._skinsPurchased = state._skinsPurchased.filter(x=>x!==id);
+        } else {
+          state._specialSkins.push(id);
+          state._skinsPurchased.push(id);
+        }
+        renderInPlace();
+      }}, (on?'☑ ':'☐ ') + (SKIN_NAMES[id] || id) + ' (' + id + ')');
+      grid.append(chip);
+    });
+    wrap.append(grid);
+    return wrap;
+  }
+
+  const PROGRESS_FIELDS = [
+    {key:'PlayTime', label:'Play time (ms)'},
+    {key:'GameScoreCurrent', label:'Score'},
+    {key:'OverallStartCount', label:'Times launched'},
+    {key:'UpgradeSTG', label:'Upgrade stage'},
+    {key:'Day', label:'Day'},
+    {key:'DatesInARow', label:'Days in a row'},
+    {key:'ScoreCollection', label:'Score collection'},
+    {key:'ShutdownBonus', label:'Shutdown bonus'}
+  ];
+
+  function renderKVEditor(obj, {addLabel='Add', numeric=true, labels=null}={}){
+    const wrap = el('div', {});
+    const rows = el('div', {class:'inset', style:'padding:6px;'});
+    function draw(){
+      rows.innerHTML = '';
+      Object.keys(obj).sort().forEach(k=>{
+        const row = el('div', {style:'display:flex; align-items:center; gap:6px; padding:3px 2px; border-bottom:1px solid #eee;'});
+        const labelText = labels && labels[k] ? labels[k] + ' (' + k + ')' : k;
+        row.append(
+          el('span', {style:'font-family:var(--mono); font-size:11.5px; flex:1;'}, labelText),
+          el('input', {type: numeric?'number':'text', value: obj[k], style:'width:110px; font-family:var(--mono); font-size:11px; border:1px solid var(--chrome-dark); padding:2px 4px;', oninput:(e)=>{
+            obj[k] = numeric ? (parseFloat(e.target.value)||0) : e.target.value;
+          }}),
+          el('button', {class:'small', onclick:()=>{ delete obj[k]; draw(); }}, '✕')
+        );
+        rows.append(row);
+      });
+      if (Object.keys(obj).length===0) rows.append(el('div',{class:'hint'}, 'Empty — add one below.'));
+    }
+    draw();
+    wrap.append(rows);
+    const addRow = el('div', {style:'display:flex; gap:6px; margin-top:8px;'});
+    const nameInput = el('input', {type:'text', placeholder:'key', style:'font-family:var(--mono); font-size:11px; border:1px solid var(--chrome-dark); padding:3px 6px; flex:1;'});
+    const valInput = el('input', {type: numeric?'number':'text', placeholder:'value', value: numeric?'0':'', style:'width:110px; font-family:var(--mono); font-size:11px; border:1px solid var(--chrome-dark); padding:3px 6px;'});
+    addRow.append(nameInput, valInput, el('button', {class:'small', onclick:()=>{
+      if (!nameInput.value) return;
+      obj[nameInput.value] = numeric ? (parseFloat(valInput.value)||0) : valInput.value;
+      nameInput.value=''; valInput.value = numeric?'0':'';
+      draw();
+    }}, addLabel));
+    wrap.append(addRow);
+    return wrap;
+  }
+
+  const BOOLEAN_FIELDS = [
+    {key:'OverrideHDDNoise', label:'Disable HDD noise', type:'strbool'},
+    {key:'OverrideCRT', label:'Disable CRT effect', type:'strbool'},
+    {key:'inGameKeyboard', label:'In-game keyboard', type:'strbool'},
+    {key:'System32WasRemoved', label:'System32 was removed (bit gag)', type:'strbool'},
+    {key:'ColorBlindness', label:'Colorblind mode', type:'strbool'},
+    {key:'RMRF', label:'RMRF flag', type:'strbool'},
+    {key:'AllowCloudSaving', label:'Allow cloud saving', type:'intbool'},
+    {key:'Consent', label:'Consent given', type:'intbool'},
+    {key:'Like', label:'Rated/liked the game', type:'intbool'}
+  ];
+
+  function renderToggle(checked, onChange){
+    let val = !!checked;
+    const label = el('label', {style:'position:relative; display:inline-block; width:38px; height:20px; flex-shrink:0;'});
+    const track = el('span', {style:'position:absolute; inset:0; border:1px solid var(--chrome-darker); cursor:pointer; transition:background .15s;'});
+    const knob = el('span', {style:'position:absolute; top:2px; width:14px; height:14px; background:#fff; border:1px solid #666; transition:left .15s;'});
+    function paint(){
+      track.style.background = val ? 'var(--bar-green)' : '#999';
+      knob.style.left = val ? '20px' : '2px';
+    }
+    paint();
+    track.addEventListener('click', ()=>{
+      val = !val;
+      paint();
+      onChange(val);
+    });
+    label.append(track, knob);
+    return label;
+  }
+
+  function renderProgressPage(){
+    const wrap = el('div', {});
+    const panel = el('div', {class:'panel'});
+    panel.append(el('h2',{}, 'General progress'));
+    const grid = el('div', {style:'display:grid; grid-template-columns: repeat(auto-fill, minmax(220px,1fr)); gap:8px;'});
+    PROGRESS_FIELDS.forEach(f=>{
+      const field = el('div', {class:'field'},
+        el('label',{}, f.label + ' (' + f.key + ')'),
+        el('input', {type:'number', value: state[f.key] ?? 0, oninput:(e)=>{ state[f.key] = parseFloat(e.target.value)||0; }})
+      );
+      grid.append(field);
+    });
+    panel.append(grid);
+    wrap.append(panel);
+
+    const stats = safeParse(state.Statistics, {});
+    state._statsLive = stats;
+
+    const currPanel = el('div', {class:'panel'});
+    currPanel.append(el('h2',{}, '💰 Currency'));
+    currPanel.append(el('div',{class:'hint', style:'margin-bottom:8px;'},
+      'Points is the classic score/currency. Progress Data is the newer currency (introduced v0.9505) stored in RAM, used for hardware and variant purchases. Product Keys is the paid currency.'
+    ));
+    const duty0 = state._duty;
+    const currRow = el('div', {class:'badge-row'});
+    currRow.append(
+      el('div', {class:'field'},
+        el('label',{}, 'Points (Statistics.Points)'),
+        el('input', {type:'number', value: stats.Points ?? 0, oninput:(e)=>{ stats.Points = parseFloat(e.target.value)||0; }})
+      ),
+      el('div', {class:'field'},
+        el('label',{}, 'Score (GameScoreCurrent)'),
+        el('input', {type:'number', value: state.GameScoreCurrent ?? 0, oninput:(e)=>{ state.GameScoreCurrent = parseFloat(e.target.value)||0; }})
+      ),
+      el('div', {class:'field'},
+        el('label',{}, 'Progress Data — bytes (DutyServices.ProgressData)'),
+        el('input', {type:'number', value: duty0.ProgressData ?? 0, oninput:(e)=>{ duty0.ProgressData = parseFloat(e.target.value)||0; }})
+      ),
+      el('div', {class:'field'},
+        el('label',{}, 'Product Keys (DutyServices.ProductKeys)'),
+        el('input', {type:'number', value: duty0.ProductKeys ?? 0, oninput:(e)=>{ duty0.ProductKeys = parseFloat(e.target.value)||0; }})
+      ),
+      el('button', {class:'small', onclick:()=>{
+        stats.Points = 999999999;
+        state.GameScoreCurrent = 999999999;
+        duty0.ProgressData = 370*1024*1024*1024*1024; // wiki-documented max RAM storage: 370 TB
+        duty0.ProductKeys = 9999;
+        renderInPlace();
+      }}, '💎 Max out')
+    );
+    currPanel.append(currRow);
+    wrap.append(currPanel);
+
+    const boolPanel = el('div', {class:'panel'});
+    boolPanel.append(el('h2',{}, '⚙ Toggles'));
+    const boolGrid = el('div', {style:'display:grid; grid-template-columns: repeat(auto-fill, minmax(240px,1fr)); gap:10px;'});
+    BOOLEAN_FIELDS.forEach(f=>{
+      const raw = state[f.key];
+      const checked = f.type==='strbool' ? (raw === 'true' || raw === true) : (Number(raw) === 1);
+      const row = el('div', {style:'display:flex; align-items:center; gap:8px; background:#fff; border:1px solid var(--chrome-dark); padding:6px 8px;'});
+      row.append(
+        renderToggle(checked, (val)=>{
+          state[f.key] = f.type==='strbool' ? (val ? 'true' : 'false') : (val ? 1 : 0);
+        }),
+        el('span', {style:'font-size:11.5px; flex:1;'}, f.label)
+      );
+      boolGrid.append(row);
+    });
+    boolPanel.append(boolGrid);
+    wrap.append(boolPanel);
+
+    const statPanel = el('div', {class:'panel'});
+    statPanel.append(el('h2',{}, 'All statistics'));
+    statPanel.append(el('div',{class:'hint', style:'margin-bottom:8px;'}, 'Every per-minigame counter (Bugs, Errors, Bsod, etc), including Points above. Edit, delete, or add new ones.'));
+    statPanel.append(renderKVEditor(stats, {addLabel:'+ Add stat'}));
+    wrap.append(statPanel);
+
+    const dutyPanel = el('div', {class:'panel'});
+    dutyPanel.append(el('h2',{}, 'Duty service scores'));
+    const duty = state._duty;
+    const dgrid = el('div', {style:'display:grid; grid-template-columns: repeat(auto-fill, minmax(220px,1fr)); gap:8px;'});
+    ['BARScore','ProgressionScore','Year'].forEach(k=>{
+      dgrid.append(el('div', {class:'field'},
+        el('label',{}, k),
+        el('input', {type:'number', value: duty[k] ?? 0, oninput:(e)=>{ duty[k] = parseFloat(e.target.value)||0; }})
+      ));
+    });
+    dutyPanel.append(dgrid);
+    wrap.append(dutyPanel);
+
+    return wrap;
+  }
+
+  function renderWallpapersPage(){
+    const wrap = el('div', {});
+    const panel = el('div', {class:'panel'});
+    panel.append(el('h2',{}, 'Wallpapers owned (WallpaperSaves)'));
+    panel.append(el('div',{class:'hint', style:'margin-bottom:8px;'}, 'How many copies/variants of each wallpaper you own.'));
+    panel.append(renderKVEditor(state._ws, {addLabel:'+ Add wallpaper', labels: NAMES}));
+    wrap.append(panel);
+
+    const panel2 = el('div', {class:'panel'});
+    panel2.append(el('h2',{}, 'Wallpaper points (GameWallpaperSaves)'));
+    panel2.append(el('div',{class:'hint', style:'margin-bottom:8px;'}, 'Currency/points earned toward each wallpaper.'));
+    panel2.append(renderKVEditor(state._gws, {addLabel:'+ Add entry', labels: NAMES}));
+    wrap.append(panel2);
+    return wrap;
+  }
+
+  function renderRawPage(){
+    const wrap = el('div', {class:'panel'});
+    wrap.append(el('h2',{}, 'Raw JSON'));
+    wrap.append(el('div', {class:'hint', style:'margin-bottom:8px;'},
+      'This is the exact object that will be encrypted on export. Edit anything directly — click "Apply" to load it back into every tab above ',
+      '(this replaces whatever you changed in other tabs with what\'s typed here). Switching tabs without applying discards unsaved raw edits.'
+    ));
+    const ta = el('textarea', {style:'width:100%; height:340px; font-family:var(--mono); font-size:11px; border:1px solid var(--chrome-dark); padding:8px; resize:vertical;'});
+    ta.value = JSON.stringify(buildFinalObject(), null, 2);
+    const msgHolder = el('div', {});
+    wrap.append(ta);
+    wrap.append(el('div', {style:'margin-top:8px; display:flex; gap:8px;'},
+      el('button', {class:'primary', onclick:()=>{
+        try {
+          const parsed = JSON.parse(ta.value);
+          msgHolder.innerHTML = '';
+          loadSave(parsed);
+        } catch(err){
+          msgHolder.innerHTML = '';
+          msgHolder.append(el('div', {class:'err'}, '✕ Invalid JSON: ' + err.message));
+        }
+      }}, '✓ Apply raw JSON'),
+      el('button', {class:'small', onclick:()=>{ ta.value = JSON.stringify(buildFinalObject(), null, 2); }}, '↺ Refresh from current state')
+    ));
+    wrap.append(msgHolder);
+    return wrap;
+  }
+
+  function renderExportPage(){
+    const wrap = el('div', {});
+    const panel = el('div', {class:'panel'});
+    panel.append(el('h2',{}, 'Export'));
+    panel.append(el('div', {}, 'This writes every change back into the save format and re-encrypts it with the game\'s own key.'));
+    const msgHolder = el('div', {});
+    panel.append(el('div', {style:'margin-top:10px;'},
+      el('button', {class:'primary', onclick: ()=> doExport(msgHolder)}, '⬇ Download savedata.txt')
+    ));
+    panel.append(msgHolder);
+    panel.append(el('div', {class:'hint', style:'margin-top:8px;'}, 'Want to check or hand-edit the exact JSON first? See the 🔧 Raw JSON tab.'));
+    panel.append(el('div', {style:'margin-top:16px; padding-top:10px; border-top:1px solid var(--chrome-dark); text-align:center; font-size:11px; color:var(--ink-soft);'}, 'Made with Claude'));
+    wrap.append(panel);
+    return wrap;
+  }
+
+  function buildFinalObject(){
+    const out = Object.assign({}, state);
+    // strip editor-only scratch fields
+    delete out._gs; delete out._bs; delete out._ws; delete out._gws; delete out._duty;
+    delete out._specialSkins; delete out._skinsPurchased; delete out._badgeTotal; delete out._badgeOverride;
+
+    const gs = Object.assign({}, state._gs);
+    const bs = Object.assign({}, state._bs);
+    const mainInstalled = [];
+
+    CATEGORIES.forEach(cat=>{
+      cat.ids.forEach(id=>{
+        const s = sysState[id];
+        if (s.installed){
+          gs[id] = s.level;
+          bs[id] = Math.max(s.best, s.level);
+          if (cat.installList) mainInstalled.push(id);
+        } else {
+          delete gs[id];
+          delete bs[id];
+          if (cat.installList){
+            const at = mainInstalled.indexOf(id);
+            if (at>=0) mainInstalled.splice(at,1);
+          }
+        }
+      });
+    });
+
+    out.Statistics = JSON.stringify(state._statsLive || safeParse(state.Statistics, {}));
+    out.GameStagesSaves = JSON.stringify(gs);
+    out.BestStagesSaves = JSON.stringify(bs);
+    out.WallpaperSaves = JSON.stringify(state._ws);
+    out.GameWallpaperSaves = JSON.stringify(state._gws);
+    out.OS_Installed_List = ' ' + mainInstalled.join(' ');
+
+    const duty = JSON.parse(JSON.stringify(state._duty));
+    const barIds = CATEGORIES.find(c=>c.key==='bar').ids.filter(id=>sysState[id].installed);
+    const compactIds = CATEGORIES.find(c=>c.key==='compact').ids.filter(id=>sysState[id].installed);
+    const bit8Ids = CATEGORIES.find(c=>c.key==='bit8').ids.filter(id=>sysState[id].installed);
+
+    duty.OS.BAR.InstalledSystem = barIds;
+    duty.OS.BAR.UpgradeStage = barIds.length;
+
+    duty.OS.CompactPC.InstalledSystem = compactIds;
+    duty.OS.CompactPC.UpgradeStage = compactIds.length;
+    compactIds.forEach(id=>{
+      if (!duty.OS.CompactPC[id] || !duty.OS.CompactPC[id].Purchases){
+        duty.OS.CompactPC[id] = {
+          Purchases: ['DE1','DE2','PC1'],
+          Settings: {CurrentDevice:1, Unboxed:1, Sync:true, CurrentCase:0, Battery:1.0, CardROM:1},
+          Cases: [0]
+        };
+      }
+    });
+
+    duty.OS.BIT8.InstalledSystem = bit8Ids;
+    duty.OS.BIT8.UpgradeStage = bit8Ids.length;
+    if (bit8Ids.length){ duty.OS.BIT8.Microchips = 10; duty.OS.BIT8.FreeMicrochips = duty.OS.BIT8.FreeMicrochips ?? 10; }
+
+    const total = state._badgeTotal || 0;
+    const idx = (state._badgeOverride!=null) ? state._badgeOverride : currentBadgeIndex(total);
+    duty.Badges = {List: BADGES, Name: BADGES[idx], Level: idx+1};
+
+    out.DutyServices = JSON.stringify(duty);
+    out.GameSpecialSkins = JSON.stringify(state._specialSkins);
+    out.SpecialSkinsPurchased = JSON.stringify(state._skinsPurchased);
+
+    return out;
+  }
+
+  function doExport(msgHolder){
+    try {
+      const finalObj = buildFinalObject();
+      const plain = JSON.stringify(finalObj);
+      const enc = encrypt(plain, KEY);
+      const blob = new Blob([enc], {type:'text/plain;charset=utf-8'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'savedata.txt';
+      document.body.append(a); a.click(); a.remove();
+      URL.revokeObjectURL(url);
+      msgHolder.innerHTML = '';
+      msgHolder.append(el('div', {class:'ok'}, '✓ Downloaded. Back up your current save before replacing it.'));
+    } catch(err){
+      msgHolder.innerHTML = '';
+      msgHolder.append(el('div', {class:'err'}, '✕ Export failed: ' + err.message));
+    }
+  }
+
+  function renderInPlace(){
+    render();
+  }
+
+  render();
+})();
+</script>
+</div>
