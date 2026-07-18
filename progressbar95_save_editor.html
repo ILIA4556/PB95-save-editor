@@ -42,6 +42,9 @@
   border-bottom-color: var(--chrome-darker);
   box-shadow: 3px 3px 0 rgba(0,0,0,0.35), 0 0 0 1px #000;
 }
+#pb95-editor-root .window.maxed {
+  max-width: 100%;
+}
 
 #pb95-editor-root .titlebar {
   background: linear-gradient(90deg, var(--title-a), var(--title-b));
@@ -62,13 +65,30 @@
   display: inline-block;
   border: 1px solid rgba(0,0,0,0.4);
 }
-#pb95-editor-root .titlebar .dots { display:flex; gap:4px; }
-#pb95-editor-root .titlebar .dots span {
-  width: 16px; height: 14px;
+#pb95-editor-root .titlebar .dots { display:flex; gap:2px; }
+#pb95-editor-root .titlebar .dots button {
+  width: 18px; height: 16px;
   background: var(--chrome);
-  border: 1px solid var(--chrome-darker);
-  display: inline-block;
+  border: 1px solid var(--chrome-light);
+  border-right-color: var(--chrome-darker);
+  border-bottom-color: var(--chrome-darker);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  cursor: pointer;
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 1;
+  color: #000;
 }
+#pb95-editor-root .titlebar .dots button:active {
+  border-color: var(--chrome-darker);
+  border-right-color: var(--chrome-light);
+  border-bottom-color: var(--chrome-light);
+}
+#pb95-editor-root .titlebar .dots button:focus { outline: 1px dotted #000; outline-offset: -3px; }
 
 #pb95-editor-root .content { padding: 14px; background: var(--chrome); }
 
@@ -354,6 +374,8 @@
   let state = null; // decrypted save object
   let sysState = {}; // id -> {installed, level}
   let activeTab = 'systems';
+  let minimized = false;
+  let maximized = false;
 
   function el(tag, attrs, ...kids){
     const e = document.createElement(tag);
@@ -373,13 +395,25 @@
 
   function render(){
     ROOT.innerHTML = '';
-    const win = el('div', {class:'window'});
+    const win = el('div', {class:'window'+(maximized?' maxed':'')});
     win.append(
       el('div', {class:'titlebar'},
         el('div', {class:'ttl'}, 'PB95SAVE.EXE — Progressbar95 Save Editor'),
-        el('div', {class:'dots'}, el('span',{},'_'), el('span',{},'▢'), el('span',{},'✕'))
+        el('div', {class:'dots'},
+          el('span', {title:'Minimize', onclick:()=>{ minimized = !minimized; render(); }}, '_'),
+          el('span', {title:'Maximize', onclick:()=>{ maximized = !maximized; render(); }}, '▢'),
+          el('span', {title:'Close (back to upload screen)', onclick:()=>{
+            if (!state || confirm('Discard the in-memory save and return to the upload screen?')){
+              state = null; minimized = false; maximized = false; render();
+            }
+          }}, '✕')
+        )
       )
     );
+    if (minimized){
+      ROOT.append(win);
+      return;
+    }
     const content = el('div', {class:'content'});
     win.append(content);
 
@@ -536,6 +570,17 @@
     return frag;
   }
 
+  function syncDualTrackedSkin(id, installed){
+    if (!SPECIAL_SKINS.includes(id)) return;
+    if (installed){
+      if (!state._specialSkins.includes(id)) state._specialSkins.push(id);
+      if (!state._skinsPurchased.includes(id)) state._skinsPurchased.push(id);
+    } else {
+      state._specialSkins = state._specialSkins.filter(x=>x!==id);
+      state._skinsPurchased = state._skinsPurchased.filter(x=>x!==id);
+    }
+  }
+
   function unlockEverything(){
     CATEGORIES.forEach(cat=> cat.ids.forEach(id=>{
       sysState[id].installed = true;
@@ -569,6 +614,7 @@
         const cb = el('input', {type:'checkbox', onchange:(e)=>{
           s.installed = e.target.checked;
           if (s.installed && s.level===0){ s.level = 1; s.best = Math.max(s.best,1); }
+          syncDualTrackedSkin(id, s.installed);
           renderInPlace();
         }});
         cb.checked = s.installed;
@@ -805,6 +851,7 @@
           state._specialSkins.push(id);
           state._skinsPurchased.push(id);
         }
+        if (sysState[id]) sysState[id].installed = !has;
         renderInPlace();
       }}, (on?'☑ ':'☐ ') + (SKIN_NAMES[id] || id) + ' (' + id + ')');
       grid.append(chip);
