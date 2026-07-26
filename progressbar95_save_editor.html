@@ -320,7 +320,7 @@
     },
     {
       key: 'bar', title: 'BarOS', duty: 'BAR',
-      ids: ['BA1','BA2','BA3','BA4','BA5','BA6','BA7','BA8','BA9','B10','B11','B12','B13','B14','B15','B16','B17','BX1','BOS']
+      ids: ['BA1','BA2','BA3','BA4','BA5','BA6','BA7','BA8','BA9','B10','B11','B12','B13','B14','B15','B16','B17','BX1','BOS','BPB']
     },
     {
       key: 'compact', title: 'CompactPC (incl. alt "B" devices)', duty: 'CompactPC',
@@ -428,6 +428,45 @@
     ROOT.append(win);
   }
 
+  const BLANK_SAVE_TEMPLATE = {
+    AllowCloudSaving: 1,
+    AppLanguage: "EN",
+    BestStagesSaves: "{}",
+    CheatCodeUsed: '{"Popup":[],"Blue":[],"Godmode":[]}',
+    ColorBlindness: "false",
+    Consent: 1,
+    DatesInARow: 0,
+    Day: 1,
+    DutyServices: "{}",
+    GameDutyNews: 0,
+    GameDutyTask: 0,
+    GameDutyTaskBack: 0,
+    GameModesPurchased: "[]",
+    GameScoreCurrent: 0,
+    GameSpecialSkins: "[]",
+    GameStagesSaves: "{}",
+    GameWallpaperSaves: "{}",
+    Like: 0,
+    OS_Installed_List: "",
+    OS_RegularUpdateStg: 0,
+    OverallStartCount: 1,
+    OverrideCRT: "false",
+    OverrideHDDNoise: "false",
+    PlayTime: 0,
+    PurchasedItemList: "",
+    RMRF: "false",
+    ScoreCollection: 0,
+    ShutdownBonus: "0",
+    SpecialSkinsPurchased: "[]",
+    Statistics: "{}",
+    System32WasRemoved: "false",
+    TutorialTip: "{}",
+    UpgradeSTG: 0,
+    Version: 10956,
+    WallpaperSaves: "{}",
+    inGameKeyboard: "false"
+  };
+
   function renderUpload(){
     const wrap = el('div', {});
     wrap.append(el('h2',{},'Load a savedata.txt'));
@@ -445,6 +484,17 @@
       if (f) handleFile(f);
     });
     wrap.append(drop);
+    wrap.append(el('div', {style:'display:flex; align-items:center; gap:10px; margin:14px 0;'},
+      el('div', {style:'flex:1; height:1px; background:var(--chrome-dark);'}),
+      el('span', {style:'font-size:11px; color:var(--ink-soft);'}, 'OR'),
+      el('div', {style:'flex:1; height:1px; background:var(--chrome-dark);'})
+    ));
+    wrap.append(el('div', {style:'text-align:center;'},
+      el('button', {class:'primary', onclick:()=>{
+        loadSave(JSON.parse(JSON.stringify(BLANK_SAVE_TEMPLATE)));
+      }}, '✨ Create a new blank save from scratch')
+    ));
+    wrap.append(el('div', {class:'hint', style:'text-align:center; margin-top:6px;'}, 'Starts with nothing installed, zero progress — build it up entirely in the editor.'));
     wrap.append(el('div', {id:'upload-msg'}));
     return wrap;
   }
